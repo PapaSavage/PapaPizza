@@ -13,16 +13,13 @@ import { View, Text, StyleSheet, Image } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 import "../global.css";
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
 	const [loaded] = useFonts({
-		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-		Inter: require("../assets/fonts/Inter.ttf"),
-		Unbounded: require("../assets/fonts/Unbounded.ttf"),
+		Onest: require("../assets/fonts/Onest.ttf"),
 	});
 
 	useEffect(() => {
@@ -45,7 +42,7 @@ export default function RootLayout() {
 						source={require("@/assets/images/pizza-logo.png")}
 						style={styles.pizzaLogo}
 					/>
-					<Text className="text-xl font-bold">НЯМ-НЯМ</Text>
+					<Text style={styles.title}>НЯМ-НЯМ</Text>
 				</View>
 				<Slot />
 			</View>
@@ -67,5 +64,13 @@ const styles = StyleSheet.create({
 	pizzaLogo: {
 		width: 48,
 		height: 48,
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: "bold",
+		fontFamily: "Onest",
+	},
+	defaultText: {
+		fontFamily: "Onest",
 	},
 });

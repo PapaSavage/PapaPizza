@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = ({
 	...rest
 }) => {
 	return (
-		<Pressable style={[styles.button, style]} onPress={onPress} {...rest}>
+		<Pressable style={[styles.button]} onPress={onPress} {...rest}>
 			<Text style={styles.text}>{title}</Text>
 		</Pressable>
 	);
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		letterSpacing: 0.25,
 		color: "white",
-		fontFamily: "Unbounded",
+		fontFamily: "Onest",
 	},
 });
 

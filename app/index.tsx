@@ -13,11 +13,9 @@ import { View, Text, StyleSheet, Image, TextInput, Button } from "react-native";
 import CustomButton from "@/components/CustomButton";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-import "../global.css";
 import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
@@ -41,7 +39,10 @@ export default function RootLayout() {
 		<ThemeProvider
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
-			<View className="flex-1 p-4" style={styles.container}>
+			<View className="flex-1 p-4 gap-5" style={styles.container}>
+				<Text className="text-center" style={styles.text}>
+					Войдите, чтобы сделать заказ
+				</Text>
 				<View style={styles.loginContainer}>
 					<TextInput style={styles.input} placeholder="Логин" />
 					<TextInput
@@ -62,14 +63,14 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#FFFFFF",
-		justifyContent: "center", // Center items vertically
+		justifyContent: "center",
 		alignItems: "center",
 	},
 	loginContainer: {
 		width: "80%",
 	},
 	input: {
-		fontFamily: "Unbounded",
+		fontFamily: "Onest",
 		height: 40,
 		borderColor: "gray",
 		borderWidth: 1,
@@ -78,6 +79,14 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 	},
 	button: {
-		fontFamily: "Unbounded",
+		fontFamily: "Onest",
+	},
+	text: {
+		fontSize: 24,
+		lineHeight: 21,
+		fontWeight: "bold",
+		letterSpacing: 0.25,
+		color: "black",
+		fontFamily: "Onest",
 	},
 });
