@@ -4,13 +4,15 @@ import {
 	ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
+import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { Slot } from "expo-router";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import CustomButton from "@/components/CustomButton";
+
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 SplashScreen.preventAutoHideAsync();
@@ -41,29 +43,25 @@ export default function RootLayout() {
 		>
 			<View className="flex-1 p-4 gap-5" style={styles.container}>
 				<Text className="text-center" style={styles.text}>
-					Войдите, чтобы сделать заказ
+					Зарегистрируйтесь, чтобы создать аккаунт
 				</Text>
-				<View style={styles.loginContainer}>
+				<View style={styles.registerContainer}>
 					<TextInput style={styles.input} placeholder="Логин" />
+					<TextInput style={styles.input} placeholder="Email" />
 					<TextInput
 						style={styles.input}
 						placeholder="Пароль"
 						secureTextEntry
 					/>
-					<CustomButton
-						title="Войти"
-						onPress={() => router.push("/store")}
+					<TextInput
+						style={styles.input}
+						placeholder="Подтвердите пароль"
+						secureTextEntry
 					/>
-				</View>
-
-				<View style={styles.registrationContainer}>
-					<Text style={styles.noAccountText}>Нет аккаунта? </Text>
-					<Text
-						style={styles.registerLink}
-						onPress={() => router.push("/registration")}
-					>
-						Зарегистрироваться
-					</Text>
+					<CustomButton
+						title="Зарегистрироваться"
+						onPress={() => router.push("/")}
+					/>
 				</View>
 
 				<Slot />
@@ -79,7 +77,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	loginContainer: {
+	registerContainer: {
 		width: "80%",
 	},
 	input: {
@@ -98,19 +96,5 @@ const styles = StyleSheet.create({
 		letterSpacing: 0.25,
 		color: "black",
 		fontFamily: "Onest",
-	},
-	registrationContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginTop: 20,
-	},
-	noAccountText: {
-		fontFamily: "Onest",
-		color: "gray",
-	},
-	registerLink: {
-		fontFamily: "Onest",
-		color: "black",
-		textDecorationLine: "underline",
 	},
 });
