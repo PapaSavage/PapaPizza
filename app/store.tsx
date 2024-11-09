@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	FlatList,
-	TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { useRouter } from "expo-router";
 import {
 	ThemeProvider,
@@ -13,6 +7,7 @@ import {
 	DefaultTheme,
 } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { TouchableOpacity } from "react-native";
 
 interface Pizza {
 	id: string;
@@ -57,25 +52,34 @@ const pizzas: Pizza[] = [
 export default function PizzaPage() {
 	const colorScheme = useColorScheme();
 	const router = useRouter();
-	const [cart, setCart] = useState<Pizza[]>([]);
-
-	const addToCart = (pizza: Pizza) => {
-		setCart((prevCart) => [...prevCart, pizza]);
-		alert(`${pizza.name} добавлена в корзину!`);
-	};
 
 	const renderPizza = ({ item }: { item: Pizza }) => (
-		<View style={styles.pizzaItem}>
-			<Text style={styles.pizzaName}>{item.name}</Text>
-			<Text style={styles.pizzaDescription}>{item.description}</Text>
-			<Text style={styles.pizzaPrice}>{item.price}руб</Text>
-			<TouchableOpacity
-				style={styles.addButton}
-				onPress={() => addToCart(item)}
-			>
-				<Text style={styles.addButtonText}>Добавить в корзину</Text>
-			</TouchableOpacity>
-		</View>
+		<TouchableOpacity
+			style={styles.pizzaItem}
+			onPress={() =>
+				router.push({
+					pathname: "/PizzaDetails",
+					params: {
+						id: item.id,
+						name: item.name,
+						description: item.description,
+						price: item.price,
+					},
+				})
+			}
+		>
+			<Image
+				source={require("@/assets/images/peperoni.png")}
+				style={styles.pizzaImage}
+			/>
+			<View style={styles.pizzaInfo}>
+				<Text style={styles.pizzaName}>{item.name}</Text>
+				<Text style={styles.pizzaDescription}>{item.description}</Text>
+				<View style={styles.priceBadge}>
+					<Text style={styles.pizzaPrice}>{item.price} руб</Text>
+				</View>
+			</View>
+		</TouchableOpacity>
 	);
 
 	return (
@@ -113,11 +117,23 @@ const styles = StyleSheet.create({
 		paddingBottom: 20,
 	},
 	pizzaItem: {
+		flexDirection: "row",
 		backgroundColor: "#f9f9f9",
+		alignItems: "center",
 		padding: 15,
 		marginBottom: 15,
 		borderRadius: 10,
-		fontFamily: "Onest",
+	},
+	pizzaImage: {
+		width: 100,
+		height: 100,
+		borderRadius: 10,
+		marginRight: 15,
+	},
+	pizzaInfo: {
+		flex: 1,
+		justifyContent: "space-between",
+		gap: 10,
 	},
 	pizzaName: {
 		fontSize: 20,
@@ -127,25 +143,17 @@ const styles = StyleSheet.create({
 	pizzaDescription: {
 		fontSize: 16,
 		color: "gray",
-		marginTop: 5,
+		fontFamily: "Onest",
+	},
+	priceBadge: {
+		alignSelf: "flex-start",
+		backgroundColor: "#E7710B",
+		borderRadius: 5,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
 		fontFamily: "Onest",
 	},
 	pizzaPrice: {
-		fontSize: 18,
-		color: "black",
-		marginTop: 10,
-		fontWeight: "semibold",
-		fontFamily: "Onest",
-	},
-	addButton: {
-		backgroundColor: "#E7710B",
-		padding: 10,
-		borderRadius: 5,
-		marginTop: 10,
-		alignItems: "center",
-		fontFamily: "Onest",
-	},
-	addButtonText: {
 		color: "#ffffff",
 		fontSize: 16,
 		fontWeight: "bold",
