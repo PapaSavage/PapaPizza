@@ -16,6 +16,10 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 SplashScreen.preventAutoHideAsync();
 import "../global.css";
 
+// Импортируем Provider и store
+import { Provider } from "react-redux";
+import store from "@/store"; // Проверьте, что путь к файлу хранилища верный
+
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
 	const [loaded] = useFonts({
@@ -33,20 +37,22 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeProvider
-			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-		>
-			<View className="p-4" style={styles.container}>
-				<View className="flex flex-row gap-1 items-center">
-					<Image
-						source={require("@/assets/images/pizza-logo.png")}
-						style={styles.pizzaLogo}
-					/>
-					<Text style={styles.title}>НЯМ-НЯМ</Text>
+		<Provider store={store}>
+			<ThemeProvider
+				value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+			>
+				<View className="p-4" style={styles.container}>
+					<View className="flex flex-row gap-1 items-center">
+						<Image
+							source={require("@/assets/images/pizza-logo.png")}
+							style={styles.pizzaLogo}
+						/>
+						<Text style={styles.title}>НЯМ-НЯМ</Text>
+					</View>
+					<Slot />
 				</View>
-				<Slot />
-			</View>
-		</ThemeProvider>
+			</ThemeProvider>
+		</Provider>
 	);
 }
 

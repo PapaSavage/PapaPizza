@@ -2,10 +2,26 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { addItemToCart } from "@/store/cartSlice";
 
 export default function PizzaDetails() {
 	const { id, name, description, price } = useLocalSearchParams();
 	const navigation = useNavigation();
+	const dispatch = useDispatch();
+
+	const handleAddToCart = () => {
+		dispatch(
+			addItemToCart({
+				id,
+				name,
+				description,
+				price,
+				quantity: 1,
+			})
+		);
+		navigation.goBack();
+	};
 
 	return (
 		<View style={styles.container}>
@@ -26,7 +42,10 @@ export default function PizzaDetails() {
 			<Text style={styles.description}>{description}</Text>
 
 			<View style={styles.buttonContainer}>
-				<TouchableOpacity style={styles.button}>
+				<TouchableOpacity
+					style={styles.button}
+					onPress={handleAddToCart}
+				>
 					<Text style={styles.buttonText}>
 						В корзину за {price} руб
 					</Text>

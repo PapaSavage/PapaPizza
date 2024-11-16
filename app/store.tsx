@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { useRouter } from "expo-router";
+import { useSelector } from "react-redux";
+import { selectCartItems } from "@/store/cartSlice";
+
 import {
 	ThemeProvider,
 	DarkTheme,
@@ -14,6 +17,12 @@ interface Pizza {
 	name: string;
 	description: string;
 	price: number;
+}
+
+interface CartItem {
+	id: string;
+	name: string;
+	quantity: number;
 }
 
 const pizzas: Pizza[] = [
@@ -52,6 +61,7 @@ const pizzas: Pizza[] = [
 export default function PizzaPage() {
 	const colorScheme = useColorScheme();
 	const router = useRouter();
+	const cartItems = useSelector(selectCartItems);
 
 	const renderPizza = ({ item }: { item: Pizza }) => (
 		<TouchableOpacity
@@ -95,6 +105,20 @@ export default function PizzaPage() {
 					contentContainerStyle={styles.list}
 					showsVerticalScrollIndicator={false}
 				/>
+			</View>
+			<View>
+				<Text>Корзина</Text>
+				{cartItems.length === 0 ? (
+					<Text>Корзина пуста</Text>
+				) : (
+					cartItems.map((item: CartItem, index: number) => (
+						<View key={item.id || index.toString()}>
+							<Text>
+								{item.name} - {item.quantity} шт.
+							</Text>
+						</View>
+					))
+				)}
 			</View>
 		</ThemeProvider>
 	);
