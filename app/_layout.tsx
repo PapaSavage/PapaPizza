@@ -13,12 +13,11 @@ import { View, Text, StyleSheet, Image } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
+import { Provider } from "react-redux";
+import store from "@/store";
+
 SplashScreen.preventAutoHideAsync();
 import "../global.css";
-
-// Импортируем Provider и store
-import { Provider } from "react-redux";
-import store from "@/store"; // Проверьте, что путь к файлу хранилища верный
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();

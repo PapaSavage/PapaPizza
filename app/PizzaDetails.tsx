@@ -1,14 +1,34 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	Image,
+	TouchableOpacity,
+	Animated,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { addItemToCart } from "@/store/cartSlice";
+import { useEffect, useRef } from "react";
 
 export default function PizzaDetails() {
-	const { id, name, description, price } = useLocalSearchParams();
+	const { id, name, description, price, image } = useLocalSearchParams();
 	const navigation = useNavigation();
 	const dispatch = useDispatch();
+
+	// Animated value for fade-in effect
+	const fadeAnim = useRef(new Animated.Value(0)).current;
+
+	// Fade-in animation when the component is mounted
+	useEffect(() => {
+		Animated.timing(fadeAnim, {
+			toValue: 1,
+			duration: 500,
+			useNativeDriver: true,
+		}).start();
+	}, []);
 
 	const handleAddToCart = () => {
 		dispatch(
@@ -17,6 +37,7 @@ export default function PizzaDetails() {
 				name,
 				description,
 				price,
+				image,
 				quantity: 1,
 			})
 		);
@@ -24,7 +45,7 @@ export default function PizzaDetails() {
 	};
 
 	return (
-		<View style={styles.container}>
+		<Animated.View style={[styles.container, { opacity: fadeAnim }]}>
 			<TouchableOpacity
 				style={styles.closeButton}
 				onPress={() => navigation.goBack()}
@@ -35,10 +56,7 @@ export default function PizzaDetails() {
 			</TouchableOpacity>
 
 			<Text style={styles.title}>{name}</Text>
-			<Image
-				source={require("@/assets/images/peperoni.png")}
-				style={styles.pizzaImage}
-			/>
+			<Image source={{ uri: image }} style={styles.pizzaImage} />
 			<Text style={styles.description}>{description}</Text>
 
 			<View style={styles.buttonContainer}>
@@ -51,7 +69,7 @@ export default function PizzaDetails() {
 					</Text>
 				</TouchableOpacity>
 			</View>
-		</View>
+		</Animated.View>
 	);
 }
 
