@@ -89,47 +89,59 @@ export default function CartPage() {
 			}
 		>
 			<Image source={{ uri: item.image }} style={styles.cartItemImage} />
-			<View
-				style={styles.cartItemInfo}
-				className="flex flex-row justify-between"
-			>
-				<View>
+			<View style={styles.cartItemInfo} className="flex flex-row ">
+				<View className="flex-grow">
 					<Text style={styles.cartItemName}>{item.name}</Text>
 					<View style={styles.priceContainer}>
 						<Text style={styles.cartItemPrice}>
 							{item.price} руб
 						</Text>
 					</View>
-					<TouchableOpacity
-						style={styles.removeButton}
-						onPress={() => handleRemoveItem(item.id)}
-					>
-						<Ionicons name="trash" size={24} color="gray" />
-					</TouchableOpacity>
-				</View>
-
-				<View style={styles.quantityContainer}>
-					<TouchableOpacity
-						onPress={() =>
-							handleQuantityChange(item.id, item.quantity - 1)
-						}
-						style={styles.quantityButton}
-					>
-						<Ionicons name="remove" size={20} color="#E7710B" />
-					</TouchableOpacity>
-					<TextInput
-						style={styles.quantityInput}
-						value={String(item.quantity)}
-						editable={false}
-					/>
-					<TouchableOpacity
-						onPress={() =>
-							handleQuantityChange(item.id, item.quantity + 1)
-						}
-						style={styles.quantityButton}
-					>
-						<Ionicons name="add" size={20} color="#E7710B" />
-					</TouchableOpacity>
+					<View className="flex flex-row items-center justify-between pt-3">
+						<TouchableOpacity
+							style={styles.removeButton}
+							onPress={() => handleRemoveItem(item.id)}
+						>
+							<Ionicons name="trash" size={24} color="gray" />
+						</TouchableOpacity>
+						<View style={styles.quantityContainer}>
+							<TouchableOpacity
+								onPress={() =>
+									handleQuantityChange(
+										item.id,
+										item.quantity - 1
+									)
+								}
+								style={styles.quantityButton}
+							>
+								<Ionicons
+									name="remove"
+									size={20}
+									color="#E7710B"
+								/>
+							</TouchableOpacity>
+							<TextInput
+								style={styles.quantityInput}
+								value={String(item.quantity)}
+								editable={false}
+							/>
+							<TouchableOpacity
+								onPress={() =>
+									handleQuantityChange(
+										item.id,
+										item.quantity + 1
+									)
+								}
+								style={styles.quantityButton}
+							>
+								<Ionicons
+									name="add"
+									size={20}
+									color="#E7710B"
+								/>
+							</TouchableOpacity>
+						</View>
+					</View>
 				</View>
 			</View>
 		</TouchableOpacity>
@@ -218,7 +230,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	cartItemName: {
-		fontSize: 20,
+		fontSize: 18,
 		fontWeight: "bold",
 		fontFamily: "Onest",
 	},
@@ -249,7 +261,6 @@ const styles = StyleSheet.create({
 	},
 	removeButton: {
 		padding: 5,
-		marginTop: 10,
 	},
 	totalContainer: {
 		padding: 20,
@@ -299,7 +310,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		textAlign: "center",
-		fontSize: 28,
+		fontSize: 18,
 		fontWeight: "bold",
 		color: "black",
 		fontFamily: "Onest",

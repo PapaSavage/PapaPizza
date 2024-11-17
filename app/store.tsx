@@ -44,10 +44,8 @@ export default function PizzaPage() {
 	const router = useRouter();
 	const cartItems = useSelector(selectCartItems);
 
-	// Animated value for fade-in effect
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
-	// Fetch pizzas from API
 	useEffect(() => {
 		const fetchPizzas = async () => {
 			try {
@@ -66,7 +64,6 @@ export default function PizzaPage() {
 		fetchPizzas();
 	}, []);
 
-	// Trigger fade-in effect
 	useEffect(() => {
 		Animated.timing(fadeAnim, {
 			toValue: 1,
@@ -133,8 +130,25 @@ export default function PizzaPage() {
 					keyExtractor={(item) => item.id.toString()}
 					contentContainerStyle={styles.list}
 					showsVerticalScrollIndicator={false}
+					style={styles.flatList} // Добавлено для добавления стиля FlatList
 				/>
 			</Animated.View>
+			<View style={styles.infoContainer}>
+				<Text style={styles.infoHeader}>Юридическая информация</Text>
+				<Text style={styles.infoText}>
+					ООО "Ваш Магазин", ИНН 1234567890
+				</Text>
+				<Text style={styles.infoText}>КПП 123456789</Text>
+				<Text style={styles.infoText}>ОГРН 1234567890123</Text>
+				<Text style={styles.infoHeader}>Расписание работы</Text>
+				<Text style={styles.infoText}>Пн-Пт: 9:00 - 21:00</Text>
+				<Text style={styles.infoText}>Сб-Вс: 10:00 - 18:00</Text>
+				<Text style={styles.infoHeader}>Положение магазина</Text>
+				<Text style={styles.infoText}>
+					г. Киров, ул. Профсоюзная, д. 1
+				</Text>
+				<Image source={require("@/assets/images/address.png")} />
+			</View>
 			{cartItems.length > 0 && (
 				<TouchableOpacity
 					style={styles.cartButton}
@@ -151,10 +165,8 @@ export default function PizzaPage() {
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#FFFFFF",
-	},
+	container: { flex: 1, backgroundColor: "#FFFFFF" },
+	listContainer: { flex: 1 },
 	header: {
 		fontSize: 28,
 		fontWeight: "bold",
@@ -163,20 +175,14 @@ const styles = StyleSheet.create({
 		color: "black",
 		fontFamily: "Onest",
 	},
-	list: {
-		paddingBottom: 20,
-	},
+	list: { paddingBottom: 20, flexGrow: 1 },
 	loadingContainer: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: "#FFFFFF",
 	},
-	loadingText: {
-		fontSize: 18,
-		color: "gray",
-		fontFamily: "Onest",
-	},
+	loadingText: { fontSize: 18, color: "gray", fontFamily: "Onest" },
 	pizzaItem: {
 		flexDirection: "row",
 		backgroundColor: "#f9f9f9",
@@ -185,27 +191,10 @@ const styles = StyleSheet.create({
 		marginBottom: 15,
 		borderRadius: 10,
 	},
-	pizzaImage: {
-		width: 100,
-		height: 100,
-		borderRadius: 10,
-		marginRight: 15,
-	},
-	pizzaInfo: {
-		flex: 1,
-		justifyContent: "space-between",
-		gap: 10,
-	},
-	pizzaName: {
-		fontSize: 20,
-		fontWeight: "bold",
-		fontFamily: "Onest",
-	},
-	pizzaDescription: {
-		fontSize: 16,
-		color: "gray",
-		fontFamily: "Onest",
-	},
+	pizzaImage: { width: 100, height: 100, borderRadius: 10, marginRight: 15 },
+	pizzaInfo: { flex: 1, justifyContent: "space-between", gap: 10 },
+	pizzaName: { fontSize: 20, fontWeight: "bold", fontFamily: "Onest" },
+	pizzaDescription: { fontSize: 16, color: "gray", fontFamily: "Onest" },
 	priceBadge: {
 		alignSelf: "flex-start",
 		backgroundColor: "#E7710B",
@@ -237,5 +226,22 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		marginLeft: 10,
 		fontFamily: "Onest",
+	},
+	infoContainer: {
+		marginTop: 20,
+		padding: 10,
+		backgroundColor: "#f9f9f9",
+		borderRadius: 10,
+	},
+	infoHeader: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "black",
+		fontFamily: "Onest",
+		marginBottom: 5,
+	},
+	infoText: { fontSize: 14, color: "gray", fontFamily: "Onest" },
+	flatList: {
+		flexGrow: 1, // Добавлено для заполнения доступного пространства
 	},
 });

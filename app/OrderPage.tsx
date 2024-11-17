@@ -6,10 +6,11 @@ import {
 	TextInput,
 	Animated,
 	TouchableOpacity,
+	ActivityIndicator, // Импортируем ActivityIndicator
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
-import { selectCartItems } from "@/store/cartSlice";
+import { selectCartItems, clearCart } from "@/store/cartSlice";
 import { useNavigation } from "@react-navigation/native";
 
 export default function CartPage() {
@@ -24,6 +25,7 @@ export default function CartPage() {
 	const [comment, setComment] = useState("");
 	const [phone, setPhone] = useState("");
 	const [fio, setFio] = useState("");
+	const [loading, setLoading] = useState(false); // Состояние для лоадера
 
 	interface CartItem {
 		id: string;
@@ -42,7 +44,15 @@ export default function CartPage() {
 		}).start();
 	}, []);
 
-	const handleCheckout = () => {
+	const calculateTotalPrice = () => {
+		return cartItems.reduce(
+			(total: number, item: CartItem) =>
+				total + item.quantity * item.price,
+			0
+		);
+	};
+
+	const handleCheckout = async () => {
 		if (!address) {
 			alert("Пожалуйста, введите адрес.");
 			return;
@@ -53,43 +63,49 @@ export default function CartPage() {
 			phone: phone,
 			address: address,
 			comment: comment,
-			listofpizza: cartItems.value.map((item: CartItem) => ({
+			listofpizza: cartItems.map((item: CartItem) => ({
 				id: item.id,
 				quantity: item.quantity,
 			})),
 		};
-		// try {
-		// 	const data = await fetch("http://127.0.0.1:8000/api/create-order", {
-		// 		method: "post",
-		// 		body: order,
-		// 	});
 
-		// 	if (data.message === "success") {
-		// 		isOrderSuccessful.value = true;
-		// 		setTimeout(() => {
-		// 			isOrderSuccessful.value = false;
-		// 		}, 4000);
-		// 		ordercred.value = {
-		// 			name: "",
-		// 			phone: "",
-		// 			address: "",
-		// 			comment: "",
-		// 		};
-		// 		cartStore.clearCart();
-		// 		setTimeout(() => {
-		// 			navigateTo("/");
-		// 		}, 4000);
-		// 	} else {
-		// 		console.error("Order submission failed:", data);
-		// 	}
-		// } catch (error) {
-		// 	console.error(
-		// 		"An error occurred while submitting the order:",
-		// 		error
-		// 	);
-		// }
+		setLoading(true); // Устанавливаем состояние загрузки в true
 
-		alert("Заказ оформлен!");
+		try {
+			const response = await fetch(
+				"http://127.0.0.1:8000/api/create-order",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(order),
+				}
+			);
+
+			const data = await response.json();
+
+			if (data.message === "success") {
+				alert("Заказ оформлен!");
+				dispatch(clearCart());
+				router.push("/");
+			} else {
+				console.error("Order submission failed:", data);
+				alert(
+					"Не удалось оформить заказ. Пожалуйста, попробуйте еще раз."
+				);
+			}
+		} catch (error) {
+			console.error(
+				"An error occurred while submitting the order:",
+				error
+			);
+			alert(
+				"Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз."
+			);
+		} finally {
+			setLoading(false); // Устанавливаем состояние загрузки в false после завершения запроса
+		}
 	};
 
 	return (
@@ -105,7 +121,6 @@ export default function CartPage() {
 				<View style={styles.emptySpace} />
 			</View>
 
-			{/* Инпуты находятся в верхней части */}
 			<View style={styles.inputContainer}>
 				<TextInput
 					style={styles.input}
@@ -133,15 +148,39 @@ export default function CartPage() {
 				/>
 			</View>
 
-			{/* Кнопка Оплатить внизу */}
-			<View style={styles.buttonContainer}>
-				<TouchableOpacity
-					onPress={handleCheckout}
-					style={styles.checkoutButton}
-				>
-					<Text style={styles.checkoutButtonText}>Оплатить</Text>
-				</TouchableOpacity>
+			<View style={styles.orderSummary}>
+				<View style={styles.orderSummaryBlock}>
+					<View style={styles.orderSummaryRow}>
+						<Text style={styles.orderSummaryTitle}>Итого</Text>
+						<Text style={styles.orderSummaryValue}>
+							{calculateTotalPrice()} ₽
+						</Text>
+					</View>
+					<View style={styles.orderSummaryRow}>
+						<Text style={styles.orderSummaryLabel}>Товары</Text>
+						<Text style={styles.orderSummaryValue}>
+							{cartItems.length} шт
+						</Text>
+					</View>
+				</View>
+				<View style={styles.buttonContainer}>
+					<TouchableOpacity
+						onPress={handleCheckout}
+						style={styles.checkoutButton}
+					>
+						<Text style={styles.checkoutButtonText}>
+							Оформить заказ
+						</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
+
+			{/* Отображение лоадера */}
+			{loading && (
+				<View style={styles.loaderContainer}>
+					<ActivityIndicator size="large" color="#E7710B" />
+				</View>
+			)}
 		</Animated.View>
 	);
 }
@@ -151,11 +190,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "#FFFFFF",
 		paddingHorizontal: 20,
-		justifyContent: "flex-start", // Размещает элементы в верхней части
+		justifyContent: "flex-start",
 	},
 	inputContainer: {
-		flex: 1, // Позволяет инпутам занимать доступное пространство
-		marginBottom: 20, // Отступ снизу для отделения от кнопки
+		flex: 1,
+		marginBottom: 20,
 	},
 	input: {
 		fontFamily: "Onest",
@@ -166,18 +205,15 @@ const styles = StyleSheet.create({
 		paddingLeft: 10,
 		borderRadius: 5,
 	},
-	buttonContainer: {
-		paddingBottom: 20, // Отступ снизу для кнопки
-	},
+	buttonContainer: {},
 	checkoutButton: {
 		backgroundColor: "#E7710B",
 		borderRadius: 10,
 		alignItems: "center",
+		paddingVertical: 15,
 	},
 	checkoutButtonText: {
 		color: "#ffffff",
-		paddingVertical: 15,
-		paddingHorizontal: 20,
 		fontSize: 18,
 		fontWeight: "bold",
 		fontFamily: "Onest",
@@ -206,5 +242,50 @@ const styles = StyleSheet.create({
 	},
 	emptySpace: {
 		flex: 1,
+	},
+	orderSummaryBlock: {
+		paddingBottom: 20,
+	},
+	orderSummary: {
+		marginBottom: 20,
+		padding: 10,
+		borderRadius: 10,
+		backgroundColor: "#F9F9F9",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+	},
+	orderSummaryRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		paddingVertical: 5,
+	},
+	orderSummaryTitle: {
+		fontSize: 18,
+		fontWeight: "bold",
+	},
+	orderSummaryLabel: {
+		fontSize: 18,
+		fontFamily: "Onest",
+	},
+	orderSummaryValue: {
+		fontWeight: "bold",
+		fontFamily: "Onest",
+		fontSize: 18,
+	},
+	loaderContainer: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "rgba(255, 255, 255, 0.8)", // Полупрозрачный фон
 	},
 });
