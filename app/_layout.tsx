@@ -9,7 +9,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { Slot } from "expo-router";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, ScrollView, Text, StyleSheet, Image } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -48,6 +48,7 @@ export default function RootLayout() {
 						/>
 						<Text style={styles.title}>НЯМ-НЯМ</Text>
 					</View>
+
 					<Slot />
 				</View>
 			</ThemeProvider>

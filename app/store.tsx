@@ -26,6 +26,7 @@ interface Pizza {
 	description: string;
 	price: number;
 	image: string;
+	category_id: number;
 }
 
 interface CartItem {
@@ -36,9 +37,15 @@ interface CartItem {
 	price: number;
 }
 
+const categories = [
+	{ id: 2, title: "Пицца" },
+	{ id: 3, title: "Роллы" },
+];
+
 export default function PizzaPage() {
 	const [pizzas, setPizzas] = useState<Pizza[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [selectedCategory, setSelectedCategory] = useState<number | null>(2); // состояние для выбранной категории
 
 	const colorScheme = useColorScheme();
 	const router = useRouter();
@@ -118,55 +125,115 @@ export default function PizzaPage() {
 		);
 	}
 
+	// Фильтрация пицц по выбранной категории
+	const filteredPizzas = selectedCategory
+		? pizzas.filter((pizza) => pizza.category_id === selectedCategory)
+		: pizzas;
+
 	return (
 		<ThemeProvider
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
 			<Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-				<Text style={styles.header}>Меню пицц</Text>
+				<View style={styles.categoryContainer}>
+					{categories.map((category) => (
+						<TouchableOpacity
+							key={category.id}
+							style={[
+								styles.categoryButton,
+								selectedCategory === category.id &&
+									styles.selectedCategoryButton,
+							]}
+							onPress={() => setSelectedCategory(category.id)}
+						>
+							<Text style={styles.categoryButtonText}>
+								{category.title}
+							</Text>
+						</TouchableOpacity>
+					))}
+					<TouchableOpacity
+						style={styles.categoryButton}
+						onPress={() => router.push("/OrdersPage")}
+					>
+						<Text style={styles.categoryButtonText}>
+							Мои заказы
+						</Text>
+					</TouchableOpacity>
+				</View>
+
 				<FlatList
-					data={pizzas}
+					data={filteredPizzas}
 					renderItem={renderPizza}
 					keyExtractor={(item) => item.id.toString()}
-					contentContainerStyle={styles.list}
 					showsVerticalScrollIndicator={false}
-					style={styles.flatList} // Добавлено для добавления стиля FlatList
+					contentContainerStyle={styles.flatList}
 				/>
-			</Animated.View>
-			<View style={styles.infoContainer}>
-				<Text style={styles.infoHeader}>Юридическая информация</Text>
-				<Text style={styles.infoText}>
-					ООО "Ваш Магазин", ИНН 1234567890
-				</Text>
-				<Text style={styles.infoText}>КПП 123456789</Text>
-				<Text style={styles.infoText}>ОГРН 1234567890123</Text>
-				<Text style={styles.infoHeader}>Расписание работы</Text>
-				<Text style={styles.infoText}>Пн-Пт: 9:00 - 21:00</Text>
-				<Text style={styles.infoText}>Сб-Вс: 10:00 - 18:00</Text>
-				<Text style={styles.infoHeader}>Положение магазина</Text>
-				<Text style={styles.infoText}>
-					г. Киров, ул. Профсоюзная, д. 1
-				</Text>
-				<Image source={require("@/assets/images/address.png")} />
-			</View>
-			{cartItems.length > 0 && (
-				<TouchableOpacity
-					style={styles.cartButton}
-					onPress={() => router.push("/CartPage")}
-				>
-					<Ionicons name="cart" size={24} color="white" />
-					<Text style={styles.cartText}>
-						{calculateTotalPrice()} руб
+				<View style={styles.infoContainer}>
+					<Text style={styles.infoHeader}>
+						Юридическая информация
 					</Text>
-				</TouchableOpacity>
-			)}
+					<Text style={styles.infoText}>
+						ООО "Ваш Магазин", ИНН 1234567890
+					</Text>
+					<Text style={styles.infoText}>КПП 123456789</Text>
+					<Text style={styles.infoText}>ОГРН 1234567890123</Text>
+					<Text style={styles.infoHeader}>Расписание работы</Text>
+					<Text style={styles.infoText}>Пн-Пт: 9:00 - 21:00</Text>
+					<Text style={styles.infoText}>Сб-Вс: 10:00 - 18:00</Text>
+					<Text style={styles.infoHeader}>Положение магазина</Text>
+					<Text className="pb-3" style={styles.infoText}>
+						г. Киров, ул. Профсоюзная, д. 1
+					</Text>
+					<Image
+						source={require("@/assets/images/address.png")}
+						style={{
+							width: "100%",
+							height: 150,
+							resizeMode: "cover",
+							borderRadius: 5,
+						}}
+					/>
+				</View>
+
+				<View style={styles.cartContainer}>
+					{cartItems.length > 0 && (
+						<TouchableOpacity
+							style={styles.cartButton}
+							onPress={() => router.push("/CartPage")}
+						>
+							<Ionicons name="cart" size={24} color="white" />
+							<Text style={styles.cartText}>
+								{calculateTotalPrice()} руб
+							</Text>
+						</TouchableOpacity>
+					)}
+				</View>
+			</Animated.View>
 		</ThemeProvider>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: "#FFFFFF" },
-	listContainer: { flex: 1 },
+	container: { flex: 1, backgroundColor: "#FFFFFF", position: "relative" },
+	categoryContainer: {
+		flexDirection: "row",
+		marginBottom: 2,
+		paddingVertical: 10, // Добавлено для отступа сверху и снизу
+	},
+	categoryButton: {
+		padding: 10,
+		backgroundColor: "#E7710B",
+		borderRadius: 20,
+		marginHorizontal: 5, // Добавлено для горизонтальных отступов между кнопками
+	},
+	selectedCategoryButton: {
+		backgroundColor: "#b24e0c",
+	},
+	categoryButtonText: {
+		color: "white",
+		fontWeight: "bold",
+		fontFamily: "Onest",
+	},
 	header: {
 		fontSize: 28,
 		fontWeight: "bold",
@@ -175,7 +242,6 @@ const styles = StyleSheet.create({
 		color: "black",
 		fontFamily: "Onest",
 	},
-	list: { paddingBottom: 20, flexGrow: 1 },
 	loadingContainer: {
 		flex: 1,
 		justifyContent: "center",
@@ -242,6 +308,11 @@ const styles = StyleSheet.create({
 	},
 	infoText: { fontSize: 14, color: "gray", fontFamily: "Onest" },
 	flatList: {
-		flexGrow: 1, // Добавлено для заполнения доступного пространства
+		flexGrow: 1,
+		paddingBottom: 20,
+	},
+	cartContainer: {
+		position: "relative",
+		flex: 1,
 	},
 });

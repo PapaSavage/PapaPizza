@@ -57,6 +57,7 @@ export default function PizzaDetails() {
 
 			<Text style={styles.title}>{name}</Text>
 			<Image source={{ uri: image }} style={styles.pizzaImage} />
+
 			<Text style={styles.description}>{description}</Text>
 
 			<View style={styles.buttonContainer}>
@@ -79,6 +80,7 @@ const styles = StyleSheet.create({
 		padding: 20,
 		backgroundColor: "#FFFFFF",
 		alignItems: "center",
+		justifyContent: "space-between", // добавлено для равномерного распределения элементов
 	},
 	closeButton: {
 		position: "absolute",
@@ -115,8 +117,6 @@ const styles = StyleSheet.create({
 		fontFamily: "Onest",
 	},
 	buttonContainer: {
-		position: "absolute",
-		bottom: 0,
 		width: "100%",
 		paddingHorizontal: 20,
 		paddingBottom: 20,

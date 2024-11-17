@@ -60,6 +60,11 @@ export default function CartPage() {
 		);
 	};
 
+	const calculateFinalPrice = () => {
+		const totalPrice = calculateTotalPrice();
+		return totalPrice >= 500 ? totalPrice : totalPrice + 500;
+	};
+
 	const handleQuantityChange = (id: string, quantity: number) => {
 		dispatch(updateCartItem({ id, quantity }));
 
@@ -157,8 +162,12 @@ export default function CartPage() {
 					<Text style={styles.backButtonText}>Назад</Text>
 				</TouchableOpacity>
 				<Text style={styles.header}>Ваша корзина</Text>
-				<View style={styles.emptySpace} />{" "}
+				<View style={styles.emptySpace} />
 			</View>
+			<Text style={styles.freeDeliveryHint}>
+				Доставка 500руб. Чтобы получить бесплатную доставку, наберите
+				корзину на сумму более 500 руб.
+			</Text>
 			{cartItems.length === 0 ? (
 				<Text style={styles.emptyText}>Корзина пуста</Text>
 			) : (
@@ -180,7 +189,7 @@ export default function CartPage() {
 					}
 				>
 					<Text style={styles.checkoutButtonText}>
-						Оформить заказ за {calculateTotalPrice()} руб
+						Оформить заказ за {calculateFinalPrice()} руб
 					</Text>
 				</TouchableOpacity>
 			)}
@@ -189,6 +198,13 @@ export default function CartPage() {
 }
 
 const styles = StyleSheet.create({
+	freeDeliveryHint: {
+		fontSize: 14,
+		color: "gray",
+		textAlign: "center",
+		marginBottom: 10,
+		fontFamily: "Onest",
+	},
 	closeButtonBackground: {
 		borderRadius: 10,
 		backgroundColor: "#E0E0E0",

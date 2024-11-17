@@ -52,6 +52,13 @@ export default function CartPage() {
 		);
 	};
 
+	const calculateTotalItems = () => {
+		return cartItems.reduce(
+			(total: number, item: CartItem) => total + item.quantity,
+			0
+		);
+	};
+
 	const handleCheckout = async () => {
 		if (!address) {
 			alert("Пожалуйста, введите адрес.");
@@ -67,6 +74,7 @@ export default function CartPage() {
 				id: item.id,
 				quantity: item.quantity,
 			})),
+			status: 0,
 		};
 
 		setLoading(true); // Устанавливаем состояние загрузки в true
@@ -85,15 +93,14 @@ export default function CartPage() {
 
 			const data = await response.json();
 
+			dispatch(clearCart());
 			if (data.message === "success") {
-				alert("Заказ оформлен!");
-				dispatch(clearCart());
-				router.push("/");
-			} else {
-				console.error("Order submission failed:", data);
-				alert(
-					"Не удалось оформить заказ. Пожалуйста, попробуйте еще раз."
-				);
+				router.push({
+					pathname: "/OrderDetailPage",
+					params: {
+						orderId: data.order_id,
+					},
+				});
 			}
 		} catch (error) {
 			console.error(
@@ -159,7 +166,7 @@ export default function CartPage() {
 					<View style={styles.orderSummaryRow}>
 						<Text style={styles.orderSummaryLabel}>Товары</Text>
 						<Text style={styles.orderSummaryValue}>
-							{cartItems.length} шт
+							{calculateTotalItems()} шт
 						</Text>
 					</View>
 				</View>

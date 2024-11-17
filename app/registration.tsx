@@ -41,7 +41,10 @@ export default function RootLayout() {
 		<ThemeProvider
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
-			<View className="flex-1 p-4 gap-5" style={styles.container}>
+			<View
+				className=" flex flex-col items-center justify-center p-4 gap-5"
+				style={styles.container}
+			>
 				<Text className="text-center" style={styles.text}>
 					Зарегистрируйтесь, чтобы создать аккаунт
 				</Text>
