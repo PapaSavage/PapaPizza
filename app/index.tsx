@@ -6,19 +6,21 @@ import {
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
-import { Slot } from "expo-router";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import axios from "../utils/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+const Login = () => {
 	const colorScheme = useColorScheme();
 	const router = useRouter();
-
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [loaded] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
 		Inter: require("../assets/fonts/Inter.ttf"),
@@ -31,6 +33,54 @@ export default function RootLayout() {
 		}
 	}, [loaded]);
 
+	const handleLogin = async () => {
+		try {
+			const response = await axios.post("/login", {
+				email,
+				password,
+			});
+			if (response.status === 200) {
+				const token = response.data.token;
+				await AsyncStorage.setItem("token", token);
+				router.push("/store");
+			}
+		} catch (error) {
+			console.error("Ошибка входа:", error);
+		}
+	};
+
+	const getToken = async () => {
+		try {
+			const token = await AsyncStorage.getItem("token");
+
+			let notAuth = false;
+			if (token != null) {
+				try {
+					const response = await axios.get("/pizzas");
+				} catch (error: any) {
+					if (error.status == 401) {
+						notAuth = true;
+					}
+				}
+			}
+			if (
+				!notAuth &&
+				token != null &&
+				token != "" &&
+				token != undefined
+			) {
+				console.log(token);
+				router.push("/store");
+			}
+		} catch (error) {
+			console.error("Ошибка получения токена:", error);
+		}
+	};
+
+	useEffect(() => {
+		getToken();
+	}, []);
+
 	if (!loaded) {
 		return null;
 	}
@@ -39,21 +89,23 @@ export default function RootLayout() {
 		<ThemeProvider
 			value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 		>
-			<View className="flex-1 p-4 gap-5" style={styles.container}>
-				<Text className="text-center" style={styles.text}>
-					Войдите, чтобы сделать заказ
-				</Text>
+			<View style={styles.container}>
+				<Text style={styles.text}>Войдите, чтобы сделать заказ</Text>
 				<View style={styles.loginContainer}>
-					<TextInput style={styles.input} placeholder="Логин" />
+					<TextInput
+						style={styles.input}
+						placeholder="Почта"
+						value={email}
+						onChangeText={setEmail}
+					/>
 					<TextInput
 						style={styles.input}
 						placeholder="Пароль"
 						secureTextEntry
+						value={password}
+						onChangeText={setPassword}
 					/>
-					<CustomButton
-						title="Войти"
-						onPress={() => router.push("/store")}
-					/>
+					<CustomButton title="Войти" onPress={handleLogin} />
 				</View>
 
 				<View style={styles.registrationContainer}>
@@ -65,12 +117,10 @@ export default function RootLayout() {
 						Зарегистрироваться
 					</Text>
 				</View>
-
-				<Slot />
 			</View>
 		</ThemeProvider>
 	);
-}
+};
 
 const styles = StyleSheet.create({
 	container: {
@@ -78,12 +128,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "#FFFFFF",
 		justifyContent: "center",
 		alignItems: "center",
+		padding: 16,
 	},
 	loginContainer: {
 		width: "80%",
 	},
 	input: {
-		fontFamily: "Onest",
 		height: 40,
 		borderColor: "gray",
 		borderWidth: 1,
@@ -97,7 +147,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		letterSpacing: 0.25,
 		color: "black",
-		fontFamily: "Onest",
+		marginBottom: 20,
 	},
 	registrationContainer: {
 		flexDirection: "row",
@@ -105,12 +155,12 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 	},
 	noAccountText: {
-		fontFamily: "Onest",
 		color: "gray",
 	},
 	registerLink: {
-		fontFamily: "Onest",
 		color: "black",
 		textDecorationLine: "underline",
 	},
 });
+
+export default Login;

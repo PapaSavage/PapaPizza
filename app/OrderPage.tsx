@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartItems, clearCart } from "@/store/cartSlice";
 import { useNavigation } from "@react-navigation/native";
+import axios from "../utils/axios";
 
 export default function CartPage() {
 	const cartItems = useSelector(selectCartItems);
@@ -59,15 +60,23 @@ export default function CartPage() {
 		);
 	};
 
+	const calculateFinalPrice = () => {
+		const totalPrice = calculateTotalPrice();
+		return totalPrice >= 500 ? totalPrice : totalPrice + 500;
+	};
+
 	const handleCheckout = async () => {
 		if (!address) {
 			alert("Пожалуйста, введите адрес.");
 			return;
 		}
 
+		if (cartItems.length === 0) {
+			alert("Корзина пуста. Пожалуйста, добавьте товары.");
+			return;
+		}
+
 		const order = {
-			fio: fio,
-			phone: phone,
 			address: address,
 			comment: comment,
 			listofpizza: cartItems.map((item: CartItem) => ({
@@ -77,21 +86,12 @@ export default function CartPage() {
 			status: 0,
 		};
 
-		setLoading(true); // Устанавливаем состояние загрузки в true
+		setLoading(true);
 
 		try {
-			const response = await fetch(
-				"http://127.0.0.1:8000/api/create-order",
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(order),
-				}
-			);
+			const response = await axios.post("/create-order", order);
 
-			const data = await response.json();
+			const data = await response.data;
 
 			dispatch(clearCart());
 			if (data.message === "success") {
@@ -102,11 +102,14 @@ export default function CartPage() {
 					},
 				});
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error(
 				"An error occurred while submitting the order:",
 				error
 			);
+			if (error.status == 401) {
+				router.push("/");
+			}
 			alert(
 				"Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз."
 			);
@@ -131,18 +134,6 @@ export default function CartPage() {
 			<View style={styles.inputContainer}>
 				<TextInput
 					style={styles.input}
-					placeholder="Введите ФИО"
-					value={fio}
-					onChangeText={setFio}
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Введите телефон"
-					value={phone}
-					onChangeText={setPhone}
-				/>
-				<TextInput
-					style={styles.input}
 					placeholder="Введите адрес"
 					value={address}
 					onChangeText={setAddress}
@@ -160,7 +151,7 @@ export default function CartPage() {
 					<View style={styles.orderSummaryRow}>
 						<Text style={styles.orderSummaryTitle}>Итого</Text>
 						<Text style={styles.orderSummaryValue}>
-							{calculateTotalPrice()} ₽
+							{calculateFinalPrice()} ₽
 						</Text>
 					</View>
 					<View style={styles.orderSummaryRow}>

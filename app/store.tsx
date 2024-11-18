@@ -19,6 +19,7 @@ import {
 } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "../utils/axios";
 
 interface Pizza {
 	id: number;
@@ -56,12 +57,14 @@ export default function PizzaPage() {
 	useEffect(() => {
 		const fetchPizzas = async () => {
 			try {
-				const response = await fetch(
-					"http://127.0.0.1:8000/api/pizzas"
-				);
-				const data = await response.json();
+				const response = await axios.get("/pizzas");
+
+				const data = await response.data;
 				setPizzas(data);
-			} catch (error) {
+			} catch (error: any) {
+				if (error.status == 401) {
+					router.push("/");
+				}
 				console.error("Error fetching pizzas:", error);
 			} finally {
 				setLoading(false);

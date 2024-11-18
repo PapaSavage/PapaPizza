@@ -8,8 +8,8 @@ import {
 	ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "../utils/axios";
 
 interface Order {
 	id: number;
@@ -22,36 +22,60 @@ interface Order {
 	updated_at: string;
 }
 
+interface User {
+	id: number;
+	name: string;
+	email: string;
+}
+
 export default function OrdersPage() {
 	const [orders, setOrders] = useState<Order[]>([]);
+	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 
 	const router = useRouter();
-
 	const navigation = useNavigation();
 
-	useEffect(() => {
-		// Fetch orders from API
-		const fetchOrders = async () => {
-			try {
-				const response = await fetch(
-					"http://127.0.0.1:8000/api/clients/29"
-				);
-				if (!response.ok) {
-					throw new Error(`Ошибка загрузки: ${response.status}`);
-				}
-				const data = await response.json();
-				setOrders(data.orders); // Предполагается, что `data` - это массив заказов
-			} catch (err: any) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
+	const getUser = async () => {
+		try {
+			const response = await axios.get("/user");
+			setUser(response.data);
+		} catch (error: any) {
+			if (error.status === 401) {
+				router.push("/");
 			}
-		};
+			setError(error.message);
+		}
+	};
 
-		fetchOrders();
+	const fetchOrders = async (userId: number) => {
+		try {
+			const response = await axios.get(`clients/${userId}`);
+			if (response.status !== 200) {
+				throw new Error(`Ошибка загрузки: ${response.status}`);
+			}
+			const data = await response.data;
+			setOrders(data.orders);
+		} catch (err: any) {
+			if (err.status === 401) {
+				router.push("/");
+			}
+			setError(err.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		getUser();
 	}, []);
+
+	useEffect(() => {
+		if (user) {
+			fetchOrders(user.id);
+		}
+	}, [user]);
 
 	const renderOrder = ({ item }: { item: Order }) => (
 		<View style={styles.orderCard}>

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import axios from "../utils/axios";
 
 interface OrderDetails {
 	id: number;
@@ -36,18 +37,19 @@ export default function OrderDetailsPage() {
 	useEffect(() => {
 		const fetchOrderDetails = async () => {
 			try {
-				const response = await fetch(
-					`http://127.0.0.1:8000/api/orders/${orderId}`
-				);
-				const data = await response.json();
+				const response = await axios.get(`/orders/${orderId}`);
+				const data = await response.data;
 
-				if (response.ok) {
+				if (response.status == 200) {
 					setOrderDetails(data);
 				} else {
 					setError(data.message || "Ошибка загрузки данных");
 				}
-			} catch (err) {
+			} catch (err: any) {
 				setError("Не удалось загрузить детали заказа");
+				if (err.status == 401) {
+					router.push("/");
+				}
 			} finally {
 				setLoading(false);
 			}
