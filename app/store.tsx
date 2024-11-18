@@ -162,6 +162,19 @@ export default function PizzaPage() {
 							Мои заказы
 						</Text>
 					</TouchableOpacity>
+					<View style={styles.cartContainer}>
+						{cartItems.length > 0 && (
+							<TouchableOpacity
+								style={styles.cartButton}
+								onPress={() => router.push("/CartPage")}
+							>
+								<Ionicons name="cart" size={24} color="white" />
+								<Text style={styles.cartText}>
+									{calculateTotalPrice()} руб
+								</Text>
+							</TouchableOpacity>
+						)}
+					</View>
 				</View>
 
 				<FlatList
@@ -196,20 +209,6 @@ export default function PizzaPage() {
 							borderRadius: 5,
 						}}
 					/>
-				</View>
-
-				<View style={styles.cartContainer}>
-					{cartItems.length > 0 && (
-						<TouchableOpacity
-							style={styles.cartButton}
-							onPress={() => router.push("/CartPage")}
-						>
-							<Ionicons name="cart" size={24} color="white" />
-							<Text style={styles.cartText}>
-								{calculateTotalPrice()} руб
-							</Text>
-						</TouchableOpacity>
-					)}
 				</View>
 			</Animated.View>
 		</ThemeProvider>
@@ -279,8 +278,8 @@ const styles = StyleSheet.create({
 	},
 	cartButton: {
 		position: "absolute",
-		bottom: 20,
-		right: 20,
+		right: 0,
+		top: -7,
 		flexDirection: "row",
 		alignItems: "center",
 		backgroundColor: "#E7710B",
@@ -315,7 +314,6 @@ const styles = StyleSheet.create({
 		paddingBottom: 20,
 	},
 	cartContainer: {
-		position: "relative",
 		flex: 1,
 	},
 });

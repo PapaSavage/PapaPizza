@@ -48,7 +48,9 @@ export default function RootLayout() {
 						/>
 						<Text style={styles.title}>НЯМ-НЯМ</Text>
 					</View>
+					{/* <ScrollView> */}
 					<Slot />
+					{/* </ScrollView> */}
 				</View>
 			</ThemeProvider>
 		</Provider>
