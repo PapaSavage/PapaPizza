@@ -158,12 +158,14 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		textAlign: "center",
 		color: "#333",
+		fontFamily: "Onest",
 	},
 	emptyText: {
 		fontSize: 18,
 		color: "gray",
 		textAlign: "center",
 		marginTop: 50,
+		fontFamily: "Onest",
 	},
 	listContent: {
 		paddingBottom: 20,
@@ -177,25 +179,30 @@ const styles = StyleSheet.create({
 	},
 	orderInfo: {
 		marginBottom: 10,
+		fontFamily: "Onest",
 	},
 	orderTitle: {
 		fontSize: 18,
 		fontWeight: "bold",
 		color: "#000",
 		marginBottom: 5,
+		fontFamily: "Onest",
 	},
 	orderAddress: {
 		fontSize: 16,
 		color: "#555",
+		fontFamily: "Onest",
 	},
 	orderStatus: {
 		fontSize: 16,
 		color: "#777",
 		marginBottom: 5,
+		fontFamily: "Onest",
 	},
 	orderDate: {
 		fontSize: 14,
 		color: "#999",
+		fontFamily: "Onest",
 	},
 	orderActions: {
 		flexDirection: "row",
@@ -207,11 +214,13 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		paddingHorizontal: 15,
 		borderRadius: 10,
+		fontFamily: "Onest",
 	},
 	detailsButtonText: {
 		color: "#FFFFFF",
 		fontSize: 16,
 		fontWeight: "bold",
+		fontFamily: "Onest",
 	},
 	cancelButton: {
 		padding: 10,
@@ -220,6 +229,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: "red",
 		textAlign: "center",
+		fontFamily: "Onest",
 	},
 	headerContainer: {
 		flexDirection: "row",
