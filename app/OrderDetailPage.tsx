@@ -15,7 +15,7 @@ import axios from "../utils/axios";
 interface OrderDetails {
 	id: number;
 	address: string;
-	comment: string | null;
+	comment: string;
 	client: { name: string; phone: string };
 	listofpizza: {
 		id: string;
@@ -135,6 +135,10 @@ export default function OrderDetailsPage() {
 						<Text style={styles.value}>
 							{orderDetails.client.phone}
 						</Text>
+					</View>
+					<View>
+						<Text style={styles.label}>Комментарий:</Text>
+						<Text style={styles.value}>{orderDetails.comment}</Text>
 					</View>
 				</View>
 			</View>
