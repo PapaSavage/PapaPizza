@@ -45,7 +45,7 @@ const categories = [
 
 export default function PizzaPage() {
 	const [pizzas, setPizzas] = useState<Pizza[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState<number | null>(2); // состояние для выбранной категории
 
 	const colorScheme = useColorScheme();
